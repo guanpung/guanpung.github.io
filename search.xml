@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[CentOS7系统Tomcat的高级配置]]></title>
+    <url>%2Fposts%2F1154ee83.html</url>
+    <content type="text"><![CDATA[解决Tomcat中文乱码问题打开Tomcat目录下的/conf/server.xml文件，在&lt;Connector &gt;标签中添加 URIEncoding=&quot;UTF-8&quot; 123&lt;Connector port="8080" protocol="HTTP/1.1" connectionTimeout="20000" redirectPort="8443" URIEncoding="UTF-8"/&gt; 配置Tomcat虚拟目录打开Tomcat目录下的/conf/server.xml文件，在Host节点内的末尾增加： 1&lt;Context path="/tony" docBase="/mnt/elements/tony" /&gt; 如果想列出文件目录，打开Tomcat目录下的/conf/web.xml，将listings设置为true 1234&lt;init-param&gt; &lt;param-name&gt;listings&lt;/param-name&gt; &lt;param-value&gt;true&lt;/param-value&gt;&lt;/init-param&gt;]]></content>
+      <categories>
+        <category>CentOS7</category>
+      </categories>
+      <tags>
+        <tag>CentOS7</tag>
+        <tag>Tomcat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CentOS7系统安装Tomcat教程]]></title>
+    <url>%2Fposts%2F50607763.html</url>
+    <content type="text"><![CDATA[安装JDK查看是否安装了JDK1$ rpm -qa | grep java 创建data目录，用来存放下载的软件1$ mkdir /data 查看是否安装成功1$ rpm -qa | grep "mysql" 下载JDK（.tar.gz ）地址需要重新获取，官网有超时验证1$ wget http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/jdk-8u171-linux-x64.tar.gz?AuthParam=1531374500_b10eecf229ee468384c72f20f97e29c6 我下载的版本是jdk1.8.0_171 解压JDK解压后的文件夹为jdk1.8.0_171 1$ tar -zxvf jdk-8u171-linux-x64.tar.gz 设置JDK环境变量1$ vi /etc/profile 把下面三行加到profile文件最后： 1234#java environmentexport JAVA_HOME=/data/jdk1.8.0_171export CLASSPATH=.:$&#123;JAVA_HOME&#125;/jre/lib/rt.jar:$&#123;JAVA_HOME&#125;/lib/dt.jar:$&#123;JAVA_HOME&#125;/lib/tools.jarexport PATH=$PATH:$&#123;JAVA_HOME&#125;/bin 刷新环境变量1$ source /etc/profile 测试1$ java -version 安装Tomcat下载Tomcat(.tar.gz )1$ wget https://mirrors.tuna.tsinghua.edu.cn/apache/tomcat/tomcat-7/v7.0.90/bin/apache-tomcat-7.0.90.tar.gz 解压文件1$ tar -zxvf apache-tomcat-7.0.90.tar.gz 进入tomcat目录1$ cd /data/apache-tomcat-7.0.90/bin/ 查看tomcat的运行状态1$ ps -ef |grep tomcat 启动Tomcat1$ sudo ./startup.sh 关闭Tomcat1$ sudo ./shutdown.sh]]></content>
+      <categories>
+        <category>CentOS7</category>
+      </categories>
+      <tags>
+        <tag>CentOS7</tag>
+        <tag>Tomcat</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CentOS7系统安装MySQL教程]]></title>
+    <url>%2Fposts%2F35f5c62d.html</url>
+    <content type="text"><![CDATA[安装MySQLCentOS7带有MariaDB而不是MySQL，可以执行以下命令1$ rpm -Uvh http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm 安装mysql5.61$ yum install mysql-server 查看是否安装成功1$ rpm -qa | grep "mysql" 查看服务信息1$ rrpm -qi mysql-community-server-5.6.40-2.el7.x86_64 启动mysql1$ service mysqld start 查看mysql状态1$ systemctl status mysqld.service 配置MySQL进入mysql命令行（先尝试无密码，直接回车）默认情况下，root用户登录本机的mysql是不需要密码的，所以直接输入回车就可以进去 1$ mysql -uroot -p 更改MySQL密码12mysql&gt; set password for 'root'@'localhost'=password('123456');mysql&gt; flush privileges; 添加远程登录账户12mysql&gt; use mysql;mysql&gt; grant all privileges on *.* to root@'%' identified by '123456'; 查看用户表1mysql&gt; select host,user,password from user;]]></content>
+      <categories>
+        <category>CentOS7</category>
+      </categories>
+      <tags>
+        <tag>CentOS7</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[CentOS7系统安装FTP教程]]></title>
+    <url>%2Fposts%2F60ab4c3a.html</url>
+    <content type="text"><![CDATA[安装vsftpd查看是否已经安装了vsftpd1$ rpm -qa|grep vsftpd 安装vsftpd1$ yum install -y vsftpd 启动服务1$ service vsftpd start 查看端口监听状态1$ netstat -nltp | grep 21 查看运行状态1$ systemctl status vsftpd.service 此时，访问ftp:// + IP可浏览机器上的/var/ftp目录了 可以看到 目录下的pub文件夹 配置vsftpdvsftpd 的配置目录为/etc/vsftpd，包含下列的配置文件： vsftpd.conf 为主要配置文件 ftpusers 配置禁止访问 FTP 服务器的用户列表 user_list 配置用户访问控制 阻止匿名访问和切换根目录匿名访问和切换根目录都会给服务器带来安全风险，我们把这两个功能关闭 1$ vi /etc/vsftpd/vsftpd.conf 找到下面两处配置并修改： 1.禁用匿名用户 12 行 YES 改为NO 1anonymous_enable=NO 2.禁止切换根目录 101 行 删除# 1chroot_local_user=YES 创建用户1$ useradd tony 设置用户密码1$ echo "123456" | passwd tony --stdin 限制用户仅能通过FTP访问,而不能直接登录服务器1$ usermod -s /sbin/nologin tony 为用户分配主目录并约定 /var/ftp 为主目录, 该目录不可上传文件 /var/ftp/pub 文件只能上传到该目录下 创建登录欢迎文件1$ echo "Welcome to use FTP service." &gt; /var/ftp/welcome.txt 设置访问权限1$ chmod a-w /var/ftp &amp;&amp; chmod 777 -R /var/ftp/pub 设置为用户的主目录1$ usermod -d /var/ftp tony 重启服务1$ service vsftpd restart]]></content>
+      <categories>
+        <category>CentOS7</category>
+      </categories>
+      <tags>
+        <tag>CentOS7</tag>
+        <tag>FTP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Windows系统配置Java环境变量]]></title>
+    <url>%2Fposts%2F7937999d.html</url>
+    <content type="text"><![CDATA[下载JDK 下载地址 下载完成后进行安装 举例我们安装后的JDK路径为D:/Java/jdk1.8.0_181 配置环境变量依次打开：计算机-&gt;属性-&gt;高级系统设置-&gt;环境变量 1.新建系统变量： JAVA_HOME 1D:\Java\jdk1.8.0_181 2.新建系统变量： CLASSPATH 1.;%JAVA_HOME%\lib\dt.jar;%JAVA_HOME%\lib\tools.jar; 2.找到系统变量 PATH 并追加： 1;%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin;]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>JDK</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Hexo NexT MarkDown 效果测试]]></title>
+    <url>%2Fposts%2F3cb98392.html</url>
+    <content type="text"><![CDATA[标题123456# 这是一级标题## 这是二级标题### 这是三级标题#### 这是四级标题##### 这是五级标题###### 这是六级标题 这是一级标题这是二级标题这是三级标题这是四级标题这是五级标题这是六级标题字体1234**这是加粗的文字***这是倾斜的文字*`***这是斜体加粗的文字***~~这是加删除线的文字~~ 这是加粗的文字 这是倾斜的文字` 这是斜体加粗的文字 这是加删除线的文字 引用123&gt;这是引用的内容&gt;&gt;这是引用的内容&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;这是引用的内容 这是引用的内容 这是引用的内容 这是引用的内容 ## 分割线 1234-------******** 图片12![blockchain](https://ss0.bdstatic.com/70cFvHSh_Q1YnxGkpoWK1HF6hhy/it/u=702257389,1274025419&amp;fm=27&amp;gp=0.jpg "区块链") 超链接12[简书](http://jianshu.com)[百度](http://baidu.com) 简书百度 列表无序列表123- 列表内容+ 列表内容* 列表内容 列表内容 列表内容 列表内容 有序列表1231.列表内容2.列表内容3.列表内容 1.列表内容2.列表内容3.列表内容 列表嵌套上一级和下一级之间敲三个空格即可 12+ 列表内容 + 列表内容 列表内容 列表内容 表格1234表头|表头|表头---|:--:|---:内容|内容|内容内容|内容|内容 表头 表头 表头 内容 内容 内容 内容 内容 内容 流程图123456789flowst=&gt;start: 开始op=&gt;operation: My Operationcond=&gt;condition: Yes or No?e=&gt;endst-&gt;op-&gt;condcond(yes)-&gt;econd(no)-&gt;op&amp; 12345678st=&gt;start: 开始op=&gt;operation: My Operationcond=&gt;condition: Yes or No?e=&gt;endst-&gt;op-&gt;condcond(yes)-&gt;econd(no)-&gt;op&amp; 自定义样式1&lt;span class="bs-label bs-label-default"&gt;默认按钮&lt;/span&gt; 默认按钮 1&lt;span class="bs-label bs-label-wonder"&gt;奇妙按钮&lt;/span&gt; 奇妙按钮 1&lt;span class="bs-label bs-label-primary"&gt;原始按钮&lt;/span&gt; 原始按钮 1&lt;span class="bs-label bs-label-success"&gt;成功按钮&lt;/span&gt; 成功按钮 1&lt;span class="bs-label bs-label-info"&gt;信息按钮&lt;/span&gt; 信息按钮 1&lt;span class="bs-label bs-label-warning"&gt;警告按钮&lt;/span&gt; 警告按钮 1&lt;span class="bs-label bs-label-danger"&gt;危险按钮&lt;/span&gt; 危险按钮]]></content>
+      <categories>
+        <category>MarkDown</category>
+      </categories>
+      <tags>
+        <tag>MarkDown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[GitHub+Hexo+NexT从零开始教你搭建个人博客（四）SEO]]></title>
+    <url>%2Fposts%2F51ba12d2.html</url>
+    <content type="text"><![CDATA[注册百度搜索资源平台在百度搜索引擎搜索自己的域名查看是否收录 site:www.guanpung.top 如果没有收录，可以到此 百度搜索资源平台 提交申请，验证网站，验证成功网站后，我们可以使用自动推送，让百度可以收录我们博客的所有网页 百度收录验证时如果选择第一种方式验证就是把 baidu_verify_6j6lLVHSN7.html放在blog的根目录,平台中有详细的操作说明，请仔细浏览。 验证成功后，打开你的hexo博客根目录，分别用下面两个命令来安装针对百度的插件 12npm install hexo-generator-sitemap --savenpm install hexo-generator-baidu-sitemap --save 安装成功后hexo g，站点根目录中的public目录会自动生成sitemap配置文件，sitemap.xml baidusitemap.xml 在 站点配置文件 中，添加以下配置 12345# 自动生成sitemapsitemap: path: sitemap.xmlbaidusitemap: path: baidusitemap.xml 修改 主题配置文件 文件 12# Enable baidu push so that the blog will push the url to baidu automatically which is very helpful for SEObaidu_push: true 修改baidu_push.swig，位置是themes/next/layout_third-party/seo，添加以下代码（代码来自百度自动推送）(最新版NexT已经为我们添加好了，无需修改)： 12345678910111213141516&#123;% if theme.baidu_push %&#125;&lt;script&gt;(function()&#123; var bp = document.createElement('script'); var curProtocol = window.location.protocol.split(':')[0]; if (curProtocol === 'https') &#123; bp.src = 'https://zz.bdstatic.com/linksubmit/push.js'; &#125; else &#123; bp.src = 'http://push.zhanzhang.baidu.com/push.js'; &#125; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(bp, s);&#125;)();&lt;/script&gt;&#123;% endif %&#125; 这样子的话每次访问博客中的页面会自动向百度提交。 设置nofollow标签给非友情链接的出站链接添加 “nofollow” 标签，nofollow标签是由谷歌领头创新的一个“反垃圾链接”的标签，并被百度、yahoo等各大搜索引擎广泛支持，引用nofollow标签的目的是：用于指示搜索引擎不要追踪（即抓取）网页上的带有nofollow属性的任何出站链接，以减少垃圾链接的分散网站权重。 Hexo的NexT主题需要修改两处： 找到themes/next/layout/_partials/footer.swig文件 将下面的内容 1&#123;&#123; __('footer.powered', '&lt;a class="theme-link" target="_blank"' + nofollow + ' href="https://hexo.io"&gt;Hexo&lt;/a&gt;') &#125;&#125; 修改为： 1&#123;&#123; __('footer.powered', '&lt;a class="theme-link" target="_blank"' + nofollow + ' href="https://hexo.io" rel="external nofollow"&gt;Hexo&lt;/a&gt;') &#125;&#125; 将下面的内容 1&lt;a class="theme-link" target="_blank"&#123;&#123; nofollow &#125;&#125; href="https://theme-next.org"&gt; 修改为： 1&lt;a class="theme-link" target="_blank"&#123;&#123; nofollow &#125;&#125; href="https://theme-next.org" rel="external nofollow"&gt; 找到themes/next/layout/_macro/sidebar.swig文件 将下面的内容 1&lt;a href="&#123;&#123; link &#125;&#125;" title="&#123;&#123; name &#125;&#125;" target="_blank"&gt;&#123;&#123; name &#125;&#125;&lt;/a&gt; 修改为： 1&lt;a href="&#123;&#123; link &#125;&#125;" title="&#123;&#123; name &#125;&#125;" target="_blank" rel="external nofollow"&gt;&#123;&#123; name &#125;&#125;&lt;/a&gt; 添加robots文件robots.txt可以告诉百度您网站的哪些页面可以被抓取，哪些页面不可以被抓取。 在站点source文件夹中新建文件robots.txt 12345678910111213141516# hexo robots.txtUser-agent: * Allow: /Allow: /archives/Allow: /categories/Allow: /tags/Allow: /about/Disallow: /vendors/Disallow: /js/Disallow: /css/Disallow: /fonts/Disallow: /vendors/Disallow: /fancybox/Sitemap: http://www.guanpung.top/sitemap.xmlSitemap: http://www.guanpung.top/baidusitemap.xml 开启压缩文件因为Hexo生成的文件是静态html，里面占用了大量的空白符。使用gulp进行压缩接口提高访问速度并且降低内存。 首先全局安装gulp，执行以下命令： 1npm insatll gulp -g 要实现gulp压缩需要安装以下五个模块： 12345npm install gulp-htmlclean --save // 清理htmlnpm install gulp-htmlmin --save // 压缩htmlnpm install gulp-imagemin --save // 压缩图片npm install gulp-minify-css --save // 压缩cssnpm install gulp-uglify --save // 混淆js 安装的模块可以在站点根目录下的package.json文件里面看到 12345"gulp-htmlclean": "^2.7.22","gulp-htmlmin": "^5.0.1","gulp-imagemin": "^4.1.0","gulp-minify-css": "^1.2.4","gulp-uglify": "^3.0.1", 站点根目录新建gulpfile.js文件，内容如下： 123456789101112131415161718192021222324252627282930313233343536373839404142434445464748var gulp = require('gulp');var minifycss = require('gulp-minify-css');var uglify = require('gulp-uglify');var htmlmin = require('gulp-htmlmin');var htmlclean = require('gulp-htmlclean');var imagemin = require('gulp-imagemin');// 压缩htmlgulp.task('minify-html', function() &#123; return gulp.src('./public/**/*.html') .pipe(htmlclean()) .pipe(htmlmin(&#123; removeComments: true, minifyJS: true, minifyCSS: true, minifyURLs: true, &#125;)) .pipe(gulp.dest('./public'))&#125;);// 压缩cssgulp.task('minify-css', function() &#123; return gulp.src('./public/**/*.css') .pipe(minifycss(&#123; compatibility: 'ie8' &#125;)) .pipe(gulp.dest('./public'));&#125;);// 压缩jsgulp.task('minify-js', function() &#123; return gulp.src('./public/js/**/*.js') .pipe(uglify()) .pipe(gulp.dest('./public'));&#125;);// 压缩图片gulp.task('minify-images', function() &#123; return gulp.src('./public/images/**/*.*') .pipe(imagemin( [imagemin.gifsicle(&#123;'optimizationLevel': 3&#125;), imagemin.jpegtran(&#123;'progressive': true&#125;), imagemin.optipng(&#123;'optimizationLevel': 7&#125;), imagemin.svgo()], &#123;'verbose': true&#125;)) .pipe(gulp.dest('./public/images'))&#125;);// 默认任务gulp.task('default', [ 'minify-html','minify-css','minify-js','minify-images']); 执行压缩: 12$ hexo g$ gulp 需要注意： 以min.js这样后缀名的文件再次压缩就会出现错误，所以我们只压缩以.js结尾的文件，不压缩.min.js结尾的文件,而.js结尾的文件都在public/js/src目录里面，.min.js结尾的文件都在public/lib/**目录里面，故设置为下面这样： 123456//压缩jsgulp.task('minify-js', function() &#123; return gulp.src('./public/js/**/*.js') .pipe(uglify()) .pipe(gulp.dest('./public/js'));&#125;);]]></content>
+      <categories>
+        <category>SEO</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+        <tag>SEO</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[GitHub+Hexo+NexT从零开始教你搭建个人博客（三）添加可爱的live2d模型]]></title>
+    <url>%2Fposts%2Ffe6996f7.html</url>
+    <content type="text"><![CDATA[闲来无聊逛逛别人的博客，无意间看到博客中屏幕右下角有个可爱的看板娘触动了老夫的少女心，经过多方查找发现这是个Hexo的插件，通过简单的配置我也可以拥有如此可爱的看板娘镇守博客，话不多说，下面来讲下如何通过简单的几步在你的博客中也加入可爱的看板娘。 先来看下效果图： 前提是你已经安装好了Node.js和Hexo Node.js官方下载地址 Hexo的安装请参考我之前的文章 接下来我们就开始进行live2d的安装： 安装live2d插件进入到你的博客根目录，打开控制台输入： 1$ npm install --save hexo-helper-live2d 修改博客配置文件_config.yml打开 站点配置文件 ,在最下方添加： 12345678910111213141516live2d: enable: true scriptFrom: local pluginRootPath: live2dw/ pluginJsPath: lib/ pluginModelPath: assets/ tagMode: false debug: false model: use: live2d-widget-model-shizuku display: position: right width: 150 height: 300 mobile: show: true 安装live2d动画模型1$ npm install live2d-widget-model-shizuku 全套模型可参考：这里 模型的预览可以参考：这里 运行重新生成并运行博客，我们马上就能看到效果了。 123$ hexo clean$ hexo g$ hexo s 大功告成，可爱的live2d看板娘已经出现在你的博客中啦！]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[GitHub+Hexo+NexT从零开始教你搭建个人博客（二）主题优化]]></title>
+    <url>%2Fposts%2F401d606.html</url>
+    <content type="text"><![CDATA[修改文章底部带#号的标签效果图： 实现方式： 修改模板/themes/next/layout/_macro/post.swig，搜索 rel=&quot;tag&quot;&gt;#，将#换成 &lt;i class=&quot;fa fa-tag&quot;&gt;&lt;/i&gt; 设置文章置顶效果图： 实现方式： 安装插件： 12$ npm uninstall hexo-generator-index –save$ npm install hexo-generator-index-pin-top –save 打开：/blog/themes/next/layout/_macro 目录下的post.swig文件，定位到&lt;div class=&quot;post-meta&quot;&gt;标签下，插入如下代码： 12345&#123;% if post.top %&#125; &lt;i class="fa fa-thumb-tack"&gt;&lt;/i&gt; &lt;font color=000000&gt;置顶&lt;/font&gt; &lt;span class="post-meta-divider"&gt;|&lt;/span&gt;&#123;% endif %&#125; 然后在需要置顶的文章的Front-matter中加上top即可： 12345---title: *******date: 2017-09-08 12:00:25top: true--- 在页面的左或右上角添加Fork me on GitHub效果图： 选择样式 GitHub Ribbons 打开 themes/next/layout/_layout.swig 文件，把代码复制到&lt;div class=&quot;headband&quot;&gt;&lt;/div&gt;下面 123&lt;div class="headband"&gt;&lt;/div&gt;&lt;a href="https://github.com/guanpung"&gt;&lt;img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"&gt;&lt;/a&gt; 添加本地搜索安装插件： 1$ npm install hexo-generator-searchdb --save 编辑 站点配置文件 文件，新增以下内容到任意位置 12345search: path: search.xml field: post format: html limit: 10000 编辑 主题配置文件 文件，启用本地搜索功能 123 # Local searchlocal_search: enable: true 设置头像边框为圆形框打开themes/next/source/css/_common/components/sidebar/sidebar-author.syl 文件，做如下修改: 123456789101112.site-author-image &#123; display: block; margin: 0 auto; padding: $site-author-image-padding; max-width: $site-author-image-width; height: $site-author-image-height; border: $site-author-image-border-width solid $site-author-image-border-color; //添加以下代码，修改头像边框 border-radius: 50%; -webkit-border-radius: 50%; -moz-border-radius: 50%;&#125; 浏览页面的时候显示当前浏览进度效果图： 编辑主题配置文件 ，搜索关键字 scrollpercent ，把false改为true 12# Scroll percent label in b2t button scrollpercent: true 如果想把top按钮放在侧边栏，编辑主题配置文件 ，搜索关键字b2t，把false改为true 12345# Back to top in sidebarb2t: true# Scroll percent label in b2t buttonscrollpercent: true 代码块自定义样式效果图： 1234567891011// 代码块自定义样式code &#123; color: #ff7600; background: #fbf7f8; margin: 2px;&#125;// 代码块 边框的样式.highlight, code, pre &#123; border: 1px solid #d6d6d6;&#125; 开启版权声明效果图： 编辑主题配置文件 ，搜索关键字post_copyright，enable改为true： 12345# Declare license on postspost_copyright: enable: true license: CC BY-NC-SA 4.0 license_url: https://creativecommons.org/licenses/by-nc-sa/4.0/ 修改文章内文本连接样式效果图： 打开themes/next/source/css/_custom/custom.styl，添加代码: 1234567891011// 文章内链接文本样式.post-body p a&#123; color: #0593d3; border-bottom: none; border-bottom: 1px solid #0593d3; &amp;:hover &#123; color: #fc6423; border-bottom: none; border-bottom: 1px solid #fc6423; &#125;&#125; 每篇文章末尾统一添加“本文结束”标记在路径/themes/next/layout/_macro中新建passage-end-tag.swig文件,并添加以下内容： 12345&lt;div&gt; &#123;% if not is_index %&#125; &lt;div style="text-align:center;color: #ccc;font-size:14px;"&gt;------ 本文结束------&lt;/div&gt; &#123;% endif %&#125;&lt;/div&gt; 打开themes/next/layout/_macro/post.swig文件，在 123&#123;#####################&#125;&#123;### END POST BODY ###&#125;&#123;#####################&#125; 前添加： 12345&lt;div&gt; &#123;% if not is_index %&#125; &#123;% include 'passage-end-tag.swig' %&#125; &#123;% endif %&#125;&lt;/div&gt; 然后编辑主题配置文件，在末尾添加： 123# 文章末尾添加“本文结束”标记passage_end_tag:enabled: true 给代码块添加复制功能新版本NexT已经集成此功能，编辑主题配置文件，找到如下配置，将false改为true： 123456789codeblock: # Manual define the border radius in codeblock # Leave it empty for the default 1 border_radius: # Add copy button on codeblock copy_button: enable: false # Show text copy result show_result: false 如果想要修改复制按钮的样式，直接在themes/next/layout/_third-party/copy-code.swig中修改css，举例，我修改了按钮文字的颜色和大小： 12font-weight: normal;color: #ff7600; 最后效果如下： 文章URL优化abbrlink插件会对标题+时间进行md5然后再转base64，保存在front-matter中。 安装abbrlink插件： 1$ npm install hexo-abbrlink --save 编辑 站点配置文件 文件，修改文章地址为： 1permalink: posts/:abbrlink.html 新增以下内容到末尾： 123abbrlink: alg: crc32 # 算法：crc16(default) and crc32 rep: hex # 进制：dec(default) and hex 标签&amp;分类URL优化编辑 站点配置文件 文件： 12345678# 分类名映射category_map: 生活: life 其他: other# 标签名映射tag_map: 生活: life 其他: other 添加不蒜子统计显示阅读次数编辑主题配置文件 ，找到如下配置 12345678910# Show Views/Visitors of the website/page with busuanzi.# Get more information on http://ibruce.info/2015/04/04/busuanzi/busuanzi_count: enable: false total_visitors: true total_visitors_icon: user total_views: true total_views_icon: eye post_views: true post_views_icon: eye 将enable的值由false修改为true后，重新部署即可看到效果 site_uv 表示是否显示整个网站的UV数 site_pv 表示是否显示整个网站的PV数 page_pv 表示是否显示每个页面的PV数 添加LeanCloud实现文章阅读量统计进入 LeanCloud官网 创建LeanCloud账号，LeanCloud支持绑定GitHub帐号 创建应用 注册并登录LeanCloud后，进入控制台，单击“创建应用”按钮进行应用的创建，输入新应用名称，选择开发版，单击“创建”按钮完成创建 创建Class 进入存储，然后点击创建Class，Class的名称必须为Counter 设置安全域名 进入设置里面的安全中心，填写自己的域名 配置Key 进入设置里面的应用Key，复制App ID和App Key 编辑主题配置文件，找到leancloud_visitors属性，将enable设置为true，然后将之前复制的App ID和App Key粘贴到相应的属性中 123456# Show number of visitors to each article.# You can visit https://leancloud.cn get AppID and AppKey.leancloud_visitors: enable: true app_id: xxxxxxxxxxxxxxxx app_key: xxxxxxxxxxxxxxxx 编辑 站点配置文件 文件，增加： 123456leancloud_counter_security: enable_sync: true app_id: BQKs9RWpjSjzbWymff2DsAyf-gzGzoHsz app_key: XpoQAIaOTNPmvxiyT8BJXwVw username: guanpung # Will be asked while deploying if is left blank password: Guantang1215 # Recommmended to be left blank. Will be asked while deploying if is left blank 这个时候重新生成部署Hexo博客，应该就可以正常使用文章阅读量统计的功能了。需要特别说明的是：记录文章访问量的唯一标识符是文章的发布日期以及文章标题，因此请确保这两个数值组合的唯一性，如果你更改了这两个数值，会造成文章阅读数值的清零重计。 安装依赖插件 1$ cnpm install hexo-leancloud-counter-security --save 将阅读次数改为热度(选择性修改) 打开/themes/next/layout/_macro/post.swig文件，搜索 leancloud-visitors-count，在后面添加&lt;span&gt;℃&lt;/span&gt; 12&lt;span class="leancloud-visitors-count"&gt;&lt;/span&gt;&lt;span&gt;℃&lt;/span&gt; 然后打开/themes/next/languages/zh-CN.yml文件，搜索阅读次数改为热度即可。 重要提示： 经过以上设置后你可能会遇到这个错误Counter not initialized! See more at console err msg. 解决办法请参考 解决LeanCloud访问错误 添加字数统计、阅读时长最新版的NexT主题已经集成了字数统计和阅读时长了，我们只需要安装一个插件再进行简单的配置即可。 1$ cnpm install hexo-symbols-count-time --save 编辑 站点配置文件 文件，添加： 12345symbols_count_time: symbols: true time: true total_symbols: true total_time: true 编辑主题配置文件，找到下面的配置，将false改为true： 12345678# Post wordcount display settings# Dependencies: https://github.com/theme-next/hexo-symbols-count-timesymbols_count_time: separated_meta: true item_text_post: true item_text_total: false awl: 4 wpm: 275 打开/themes/next/languages/zh-CN.yml文件，搜索本文字数改为字数统计即可。 网站底部字数统计（wordcount方式）效果图: 实现方式： 添加插件： 1$ npm install hexo-wordcount --save 可以加到这里 /themes/next/layout/_partials/footer.swig 由于我添加了不蒜子统计，为了好看我把样式添加到了不蒜子统计的后面，加在了 themes/next/layout/_third-party/analytics/busuanzi-counter.swig文件的末尾 123456789101112131415161718192021222324252627&#123;% if theme.busuanzi_count.enable %&#125;&lt;div class="busuanzi-count"&gt; &lt;script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"&gt;&lt;/script&gt; &#123;% if theme.busuanzi_count.total_visitors %&#125; &lt;span class="site-uv" title="&#123;&#123; __('footer.total_visitors') &#125;&#125;"&gt; &lt;i class="fa fa-&#123;&#123; theme.busuanzi_count.total_visitors_icon &#125;&#125;"&gt;&lt;/i&gt; 本站总访客量 &lt;span class="busuanzi-value" id="busuanzi_value_site_uv"&gt;&lt;/span&gt; &lt;/span&gt; &#123;% endif %&#125; &#123;% if theme.busuanzi_count.total_views %&#125; &lt;span class="site-pv" title="&#123;&#123; __('footer.total_views') &#125;&#125;"&gt; &lt;i class="fa fa-&#123;&#123; theme.busuanzi_count.total_views_icon &#125;&#125;"&gt;&lt;/i&gt; 本站总访问量 &lt;span class="busuanzi-value" id="busuanzi_value_site_pv"&gt;&lt;/span&gt; &lt;/span&gt; &#123;% endif %&#125; &lt;div class="theme-info" title="本站文字统计"&gt; &lt;i class="fa fa-pencil-square-o"&gt;&lt;/i&gt; &lt;span class="post-count"&gt;本站共 &#123;&#123; totalcount(site) &#125;&#125; 字&lt;/span&gt; &lt;/div&gt;&lt;/div&gt;&#123;% endif %&#125;]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[GitHub+Hexo+NexT从零开始教你搭建个人博客（一）环境搭建]]></title>
+    <url>%2Fposts%2F41257b5e.html</url>
+    <content type="text"><![CDATA[安装 Git Bash 下载地址 选好安装路径一路Next即可 安装完成后，打开命令行工具，敲入git version查看是否安装成功 安装 Node.js 下载地址 选好安装路径一路Next 安装完成后，打开命令行工具，敲入node -v查看是否安装成功 安装npm的淘宝镜像1$ npm install -g cnpm --registry=https://registry.npm.taobao.org 安装Hexo1$ cnpm install -g hexo-cli 安装成功的截图： 创建博客目录创建自己的博客目录，例如：D://Hexo，在这个目录下打开命令行工具 初始化Hexo12$ hexo init$ cnpm install 此处可以不执行cnpm install命令，hexo init命令已经把hexo的基本插件安装好了，如果后续安装其他插件出现错误导致整个工程不能编译，我们可以使用cnpm install命令尝试重新安装所有package.json下指定的插件。 安装扩展插件具体插件的作用我在后续的文章中会有详细的讲解，此处逐一安装。 安装带有置顶功能的index插件 12$ cnpm uninstall hexo-generator-index --save$ cnpm install hexo-generator-index-pin-top --save 安装URL优化插件 1$ cnpm install hexo-abbrlink --save 安装Git插件 1$ cnpm install hexo-deployer-git --save 安装本地搜索插件 1$ cnpm install hexo-generator-searchdb --save 安装文字计数统计插件wordcount 1$ cnpm install hexo-wordcount --save 安装文字计数统计插件symbols-count-time 1$ cnpm install hexo-symbols-count-time --save 安装live2d插件 12$ cnpm install hexo-helper-live2d --save$ cnpm install live2d-widget-model-shizuku --save 安装站点地图插件 12$ cnpm install hexo-generator-sitemap --save$ cnpm install hexo-generator-baidu-sitemap --save]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[欢迎来到Tony的技术博客]]></title>
+    <url>%2Fposts%2F8a4d9fb2.html</url>
+    <content type="text"><![CDATA[1234567大鹏一日同风起，扶摇直上九万里。假令风歇时下来，犹能簸却沧溟水。世人见我恒殊调，闻余大言皆冷笑。宣父犹能畏后生，丈夫未可轻年少。]]></content>
+  </entry>
+</search>
