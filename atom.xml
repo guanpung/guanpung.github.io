@@ -171,7 +171,9 @@
     
     </summary>
     
-      <category term="MarkDown" scheme="http://www.guanpung.top/categories/MarkDown/"/>
+      <category term="Hexo" scheme="http://www.guanpung.top/categories/Hexo/"/>
+    
+      <category term="MarkDown" scheme="http://www.guanpung.top/categories/Hexo/MarkDown/"/>
     
     
       <category term="MarkDown" scheme="http://www.guanpung.top/tags/MarkDown/"/>
@@ -196,7 +198,9 @@
     
     </summary>
     
-      <category term="SEO" scheme="http://www.guanpung.top/categories/SEO/"/>
+      <category term="Hexo" scheme="http://www.guanpung.top/categories/Hexo/"/>
+    
+      <category term="SEO" scheme="http://www.guanpung.top/categories/Hexo/SEO/"/>
     
     
       <category term="Hexo" scheme="http://www.guanpung.top/tags/Hexo/"/>
@@ -272,6 +276,10 @@
     
     </summary>
     
+      <category term="Hexo" scheme="http://www.guanpung.top/categories/Hexo/"/>
+    
+    
+      <category term="Hexo" scheme="http://www.guanpung.top/tags/Hexo/"/>
     
   </entry>
   
